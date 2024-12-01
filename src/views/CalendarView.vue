@@ -4,13 +4,13 @@
     const { days } = defineProps<{
         days: string[]
     }>()
-    const { fetchOpenedDays, days: storedDays, openDay } = useCalendar()
+    const { fetchOpenedDays, days: storedDays } = useCalendar()
 
     onMounted(() => {
         fetchOpenedDays()
     })
 
-    const jesaisplus = computed(() => {
+    const calendarSlots = computed(() => {
         return days.map(d => ({
             done: !!storedDays.value[d-1],
             label: d
@@ -22,10 +22,10 @@
     <div class="Calendar">
       <h1 class="Calendar__title">Calendrier de l'avent de Cec</h1>
       <div class="Calendar__list">
-        <RouterLink @click="() => openDay(parseInt(day.label))" 
+        <RouterLink 
             :to="`/${day.label}`" 
             :class="[{ 'isDone': day.done }, 'Calendar__item']" 
-            v-for="(day, i) in jesaisplus" 
+            v-for="(day, i) in calendarSlots" 
             :key="i">
             {{ day.label }}
         </RouterLink>

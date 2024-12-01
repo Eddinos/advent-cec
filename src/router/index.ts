@@ -14,14 +14,6 @@ const router = createRouter({
       }
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
-    },
-    {
       path: '/calendar',
       name: 'calendar',
       component: () => import('../views/CalendarView.vue'),
@@ -35,7 +27,7 @@ const router = createRouter({
 
 function setPropsDays () {
   const currentDate = new Date().getDate()
-  return {days: Array.from({length: Math.min(25, 31)}, (_, i) => i + 1)}
+  return {days: Array.from({length: Math.min(25, currentDate)}, (_, i) => i + 1)}
 }
 
 export default router

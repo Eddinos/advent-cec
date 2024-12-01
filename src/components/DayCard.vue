@@ -1,13 +1,19 @@
 <script setup lang="ts">
     import {ref} from 'vue'
-    defineProps<{
+    import useCalendar from '../composables/useCalendar'
+
+    const { opened, number } = defineProps<{
         number: string,
-        imageUrl: string
+        imageUrl: string,
+        opened: boolean
     }>()
 
-    const isFlipped = ref(false)
+    const { openDay } = useCalendar()
+    console.log({opened})
+    const isFlipped = ref(opened || false)
     const toggle = () => {
         isFlipped.value = !isFlipped.value
+        if (isFlipped.value) openDay(parseInt(number))
     }
 </script>
 
