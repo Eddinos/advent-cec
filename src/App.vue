@@ -24,6 +24,8 @@ import { RouterView } from 'vue-router'
 <style scoped>
 .App {
   position: relative;
+  display: flex;
+  justify-content: center;
 }
 
 header {
@@ -93,7 +95,7 @@ nav a:first-of-type {
 }
 .zoom-enter-from, .zoom-leave-to {
   opacity: 0;
-  transform: scale(0);
+  transform: scale(0) ;
   will-change: opacity, transform ;
 }
 </style>
