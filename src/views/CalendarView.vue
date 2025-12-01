@@ -20,7 +20,7 @@
 
 <template>
     <div class="Calendar">
-      <h1 class="Calendar__title">Calendrier de l'avent de Cec</h1>
+      <h1 class="Calendar__title">Calendrier de l'avent de Thessa</h1>
       <div class="Calendar__list">
         <RouterLink 
             :to="`/${day.label}`" 
