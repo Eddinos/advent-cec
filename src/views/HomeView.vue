@@ -3,9 +3,11 @@
   import { useRouter } from 'vue-router'
   import {computed} from 'vue'
   import useCalendar from '../composables/useCalendar'
+  import Box from '@/components/DayBox.vue'
   const router = useRouter()
   const { number } = defineProps<{
-    number: string
+    number: string,
+    debug?: boolean
   }>()
   const { days } = useCalendar()
 
@@ -24,11 +26,12 @@
 
 <template>
   <main class="HomeView">
-    <h1 style="margin-bottom: 64px;">{{ expectationTitle }}</h1>
-    <DayCard :number="number" :imageUrl="`/calendar/${parseInt(number)}.${isDayInFive ? 'gif' : 'jpeg'}`" :opened="!!days[parseInt(number) - 1]" />
+    <h1>{{ expectationTitle }}</h1>
+    <DayCard v-if="!debug" :number="number" :imageUrl="`/calendar/${parseInt(number)}.${isDayInFive ? 'gif' : 'jpeg'}`" :opened="!!days[parseInt(number) - 1]" />
     <RouterLink class="CalendarButton" to="calendar">
       <img width="100%" src="@/assets/date-icon.svg" alt="">
     </RouterLink>
+    <Box v-if="debug" :number="number" />
   </main>
 </template>
 
@@ -40,10 +43,10 @@
     height: 64px;
     padding: 10px;
     width: 64px;
-    position: absolute;
+    /* position: absolute; */
     bottom: 48px;
-    left: 50%;
-    transform: translateX(-50%);
+    /* left: 50%; */
+    /* transform: translateX(-50%); */
     border: 2px solid gold;
   }
 

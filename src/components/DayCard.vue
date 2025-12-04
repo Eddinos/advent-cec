@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import {ref} from 'vue'
     import useCalendar from '../composables/useCalendar'
+    import DayBox from './DayBox.vue'
 
     const { opened, number } = defineProps<{
         number: string,
@@ -19,21 +20,26 @@
 
 <template>
     <div class="DayCard">
-        <a class="DayCard__Button" :onclick="toggle">
-            <Transition name="flip">
+        <!-- <a class="DayCard__Button" :onclick="toggle"> -->
+            <!-- <Transition name="flip">
                 <div class="DayCard__Title" v-if="!isFlipped">
                     <span class="">{{ number }}</span>
                 </div>
                 <img class="DayCard__Image" v-else :src="imageUrl" alt="">
-            </Transition>
-        </a>
+            </Transition> -->
+            <DayBox :number="number" @click="toggle">
+                <template #back>
+                    <img :src="imageUrl" :alt="`Image du jour ${number}`" />
+                </template>
+            </DayBox>
+        <!-- </a> -->
     </div>
 </template>
 
 <style lang="scss">
     .DayCard {
-        width: 80vw;
-        aspect-ratio: 1;
+        // width: 80vw;
+        // aspect-ratio: 1;
         
         color: #1D1D1B;
         text-align: center;
