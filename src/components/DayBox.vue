@@ -4,7 +4,7 @@ const { number, isOpened } = defineProps<{
     number: string,
     isOpened?: boolean
 }>()
-const currentSide = ref(isOpened ? 'front' : 'back')
+const currentSide = ref(isOpened ? 'back' : 'front')
 const flipSide = () => {
     // currentSide.value = currentSide.value === 'front' ? 'back' : 'front'
     currentSide.value = 'dance'
@@ -149,6 +149,7 @@ background-color: firebrick;
 
 .box__faceCenter img {
     width: 95%;
+    max-height: 95%;
     object-fit: cover;
     display: inline-block;
     vertical-align: middle;
