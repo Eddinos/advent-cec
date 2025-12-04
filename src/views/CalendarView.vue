@@ -1,21 +1,34 @@
 <script setup lang="ts">
-    import { onMounted, computed } from 'vue'
-    import useCalendar from '../composables/useCalendar'
-    const { days } = defineProps<{
-        days: string[]
-    }>()
-    const { fetchOpenedDays, days: storedDays } = useCalendar()
+import { onMounted, computed } from 'vue'
+import useCalendar from '../composables/useCalendar'
+const { days } = defineProps<{
+    days: string[]
+}>()
+const { fetchOpenedDays, days: storedDays } = useCalendar()
 
-    onMounted(() => {
-        fetchOpenedDays()
-    })
+onMounted(() => {
+    fetchOpenedDays()
+})
 
-    const calendarSlots = computed(() => {
-        return days.map(d => ({
-            done: !!storedDays.value[d-1],
-            label: d
-        }))
-    })
+function shuffle(array: string[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+const today = new Date().getDate();
+
+const calendarSlots = computed(() => {
+    // Shuffle all days
+    const shuffled = shuffle([...days])
+    return shuffled.map((d) => ({
+        done: !!storedDays.value[d-1],
+        label: d,
+        visible: Number(d) <= today
+    }))
+})
 </script>
 
 <template>
@@ -24,9 +37,14 @@
       <div class="Calendar__list">
         <RouterLink 
             :to="`/${day.label}`" 
-            :class="[{ 'isDone': day.done }, 'Calendar__item']" 
+            :class="[
+                { 'isDone': day.done, 'isInvisible': !day.visible },
+                'Calendar__item'
+            ]" 
             v-for="(day, i) in calendarSlots" 
-            :key="i">
+            :key="i"
+            v-show="day.visible || !day.visible"
+        >
             {{ day.label }}
         </RouterLink>
       </div>
@@ -58,6 +76,10 @@
 .isDone {
     box-shadow: gold 0 0 12px;
     background-color: rgb(178, 34, 34, .4);
+}
+
+.isInvisible {
+    visibility: hidden;
 }
 
 .Calendar__title {

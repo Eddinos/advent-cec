@@ -26,8 +26,8 @@ const router = createRouter({
 })
 
 function setPropsDays () {
-  const currentDate = new Date().getDate()
-  return {days: Array.from({length: Math.min(25, currentDate)}, (_, i) => i + 1)}
+  // const currentDate = new Date().getDate()
+  return {days: Array.from({length: Math.min(25)}, (_, i) => i + 1)}
 }
 
 export default router

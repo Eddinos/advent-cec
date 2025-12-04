@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { onMounted, ref, useTemplateRef } from 'vue'
-const currentSide = ref('front')
-const { number } = defineProps<{
+const { number, isOpened } = defineProps<{
     number: string,
-  }>()
+    isOpened?: boolean
+}>()
+const currentSide = ref(isOpened ? 'front' : 'back')
 const flipSide = () => {
     // currentSide.value = currentSide.value === 'front' ? 'back' : 'front'
     currentSide.value = 'dance'
