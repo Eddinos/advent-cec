@@ -1,40 +1,83 @@
 <script lang="ts" setup>
-import { onMounted, ref, useTemplateRef } from 'vue'
-const { number, isOpened } = defineProps<{
+import { onMounted, ref, useTemplateRef, defineEmits } from 'vue'
+const { number, defaultSide } = defineProps<{
     number: string,
-    isOpened?: boolean
+    defaultSide?: 'front' | 'back' | 'left' | 'right' | 'top' | 'bottom' | 'dance'
 }>()
-const currentSide = ref(isOpened ? 'back' : 'front')
+const emit = defineEmits(['flipped'])
+const currentSide = ref(defaultSide)
+const startTouchPoint = ref({ x: 0, y:0 })
+const endTouchPoint = ref({ x: 0, y:0 })
+const hintFinished = ref(false)
+// const coords = ref({x: 0, y:0})
+const debug = ref(defaultSide)
 const flipSide = () => {
     // currentSide.value = currentSide.value === 'front' ? 'back' : 'front'
     currentSide.value = 'dance'
 }
 const boxRef = useTemplateRef('box')
 onMounted(() => {
-    console.log(boxRef.value)
-    boxRef.value!.addEventListener('dragstart', console.log)
-    boxRef.value!.addEventListener('animationend', () => {
-        console.log('animation ended')
-        currentSide.value = 'back'
+    boxRef.value!.addEventListener('touchmove', onMouseMove)
+
+    boxRef.value!.addEventListener('animationend', ({ animationName }) => {
+        console.log({animationName})
+        if (animationName === 'dance') {
+            currentSide.value = 'back'
+            emit('flipped')
+        } else if (animationName === 'hint') {
+            boxRef.value!.classList.remove('hint')
+            hintFinished.value = true
+        }
+        boxRef.value!.style.transform = ``
     })
+
+    if (defaultSide === 'front') {
+        boxRef.value!.classList.add('hint')
+    } 
 })
-function onMouseMove(event: MouseEvent) {
+function onMouseMove(event: TouchEvent) {
+    // alert('touchmove')
     if (currentSide.value === 'dance') return
-    const rotateFactor = currentSide.value === 'back' ? 8 : 24
+    const rotateFactor = currentSide.value === 'back' ? 8 : 36
     const rotateYOffset = currentSide.value === 'back' ? -180 : 0
     const box = boxRef.value!
     const rect = box.getBoundingClientRect()
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
+    // const x = event.touches[0].clientX
+    // const y = event.touches[0].clientY
+    const x = event.touches[0].clientX - rect.left
+    const y = event.touches[0].clientY - rect.top
     const centerX = rect.width / 2
     const centerY = rect.height / 2
     const rotateX = ((y - centerY) / centerY) * -rotateFactor
     const rotateY = (((x - centerX) / centerX) * rotateFactor) + rotateYOffset
+    // debug.value = `RX: ${rotateX}, RY: ${rotateY}`
     box.style.transform = `translateZ(-50px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
-    console.log({rotateX, rotateY})
-    if (rotateY < -25 && currentSide.value === 'front') {
+    // console.log({rotateX, rotateY})
+    // if (rotateY < -25 && currentSide.value === 'front') {
+    //     flipSide()
+    // }
+}
+function onTouchEnd (event: TouchEvent) {
+    boxRef.value!.style.transform = ``
+    if (!hintFinished.value) return
+    endTouchPoint.value = {
+        x: event.changedTouches[0].clientX,
+        y: event.changedTouches[0].clientY
+    }
+    const deltaX = endTouchPoint.value.x - startTouchPoint.value.x
+    // debug.value = debug.value + ` | deltaX: ${deltaX}`
+    const flipCondition = deltaX < -200 && currentSide.value !== 'dance' && currentSide.value !== 'back' 
+    // alert(flipCondition)
+    if (flipCondition) {
         flipSide()
-        box.style.transform = ``
+    }
+}
+
+function onTouchStart (e: TouchEvent) {
+    console.log('touchstart')
+    startTouchPoint.value = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
     }
 }
 </script>
@@ -42,7 +85,12 @@ function onMouseMove(event: MouseEvent) {
 <template>
     
     <div class="scene" @click="flipSide">
-        <div class="box" :class="'show-' + currentSide" ref="box" @mousemove="onMouseMove">
+        <!-- X: {{ coords.x }}, Y: {{ coords.y }} -->
+        <!-- {{ debug }} -->
+        <div class="box" :class="'show-' + currentSide" 
+             ref="box" 
+             @touchend="onTouchEnd" 
+             @touchstart="onTouchStart">
             <div class="box__face box__face--front">
                 <div class="box__faceCenter">
                     {{ number }}
@@ -122,6 +170,10 @@ function onMouseMove(event: MouseEvent) {
   /*transform: translateZ(00px) rotateY(360deg) rotateZ(360deg); */
 }
 
+.box.hint {
+    animation: 1s ease-in-out 0.5s 2 forwards hint;
+}
+
 
 .box__face {
     position: absolute;
@@ -166,8 +218,12 @@ background-color: firebrick;
 } */
 .box__face .box__faceCenter {
     transform: scale(.95);
-    background-color: firebrick;
+    background: linear-gradient(145deg, rgb(187, 0, 0) 0%, rgb(92, 0, 0) 100%);
     height: 100%;
+}
+
+.box__face:not(.box__face--front):not(.box__face--back) .box__faceCenter {
+    background-color: rgb(0, 75, 0);
 }
 
 .box__faceCenter img {
@@ -192,21 +248,15 @@ background-color: firebrick;
 .box__face--top    { transform: rotateX( 90deg) translateZ(100px); }
 .box__face--bottom { transform: rotateX(-90deg) translateZ(200px); }
 
-@keyframes zoom {
+@keyframes hint {
   0% {
-    transform: translateX(00px) scale(1);
+    transform: rotateY(0) translateZ(-50px);
   }
   50% {
-    transform: translateX(100px) scale(1.45);
-  }
-  90% {
-    transform: translateX(100px) scale(1.495);
-  }
-  98% {
-    transform: translateX(100px) scale(1.5);
+    transform: rotateY(-25deg) translateZ(-50px);
   }
   100% {
-    transform: translateX(100px) scale(1);
+    transform: rotateY(0) translateZ(-50px);
   }
 }
 

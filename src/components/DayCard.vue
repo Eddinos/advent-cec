@@ -10,7 +10,6 @@
     }>()
 
     const { openDay } = useCalendar()
-    console.log({opened})
     const isFlipped = ref(opened || false)
     const toggle = () => {
         isFlipped.value = !isFlipped.value
@@ -27,7 +26,7 @@
                 </div>
                 <img class="DayCard__Image" v-else :src="imageUrl" alt="">
             </Transition> -->
-            <DayBox :number="number" @click="toggle">
+            <DayBox :number="number" @click="toggle" @flipped="toggle" :default-side="opened ? 'back' : 'front'">
                 <template #back>
                     <img :src="imageUrl" :alt="`Image du jour ${number}`" />
                 </template>
