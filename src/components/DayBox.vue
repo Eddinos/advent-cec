@@ -18,12 +18,31 @@ onMounted(() => {
         currentSide.value = 'back'
     })
 })
+function onMouseMove(event: MouseEvent) {
+    if (currentSide.value === 'dance') return
+    const rotateFactor = currentSide.value === 'back' ? 8 : 24
+    const rotateYOffset = currentSide.value === 'back' ? -180 : 0
+    const box = boxRef.value!
+    const rect = box.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+    const rotateX = ((y - centerY) / centerY) * -rotateFactor
+    const rotateY = (((x - centerX) / centerX) * rotateFactor) + rotateYOffset
+    box.style.transform = `translateZ(-50px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
+    console.log({rotateX, rotateY})
+    if (rotateY < -25 && currentSide.value === 'front') {
+        flipSide()
+        box.style.transform = ``
+    }
+}
 </script>
 
 <template>
     
     <div class="scene" @click="flipSide">
-        <div class="box" :class="'show-' + currentSide" ref="box">
+        <div class="box" :class="'show-' + currentSide" ref="box" @mousemove="onMouseMove">
             <div class="box__face box__face--front">
                 <div class="box__faceCenter">
                     {{ number }}
@@ -119,6 +138,10 @@ onMounted(() => {
     width: var(--box-width);
     height: var(--box-height);
     line-height: var(--box-height);
+}
+
+.box__face--front {
+    font-size: 150px;
 }
 
 .box__face--right,

@@ -27,7 +27,7 @@
 <template>
   <main class="HomeView">
     <h1>{{ expectationTitle }}</h1>
-    <DayCard v-if="!debug" :number="number" :imageUrl="`/calendar/${parseInt(number)}.${isDayInFive ? 'gif' : 'jpeg'}`" :opened="!!days[parseInt(number) - 1]" />
+    <DayCard v-if="!debug" :number="number" :imageUrl="`/calendar/${parseInt(number)}.jpeg`" :opened="!!days[parseInt(number) - 1]" />
     <RouterLink class="CalendarButton" to="calendar">
       <img width="100%" src="@/assets/date-icon.svg" alt="">
     </RouterLink>

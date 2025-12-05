@@ -35,18 +35,18 @@ const calendarSlots = computed(() => {
     <div class="Calendar">
       <h1 class="Calendar__title">Calendrier de l'avent de Thessa</h1>
       <div class="Calendar__list">
-        <RouterLink 
-            :to="`/${day.label}`" 
+        <component 
+            :is="day.visible ? 'router-link' : 'span'"
+            :to="`/${day.label}`"
             :class="[
-                { 'isDone': day.done, 'isInvisible': !day.visible },
+                { 'isDone': day.done },
                 'Calendar__item'
             ]" 
             v-for="(day, i) in calendarSlots" 
             :key="i"
-            v-show="day.visible || !day.visible"
         >
             {{ day.label }}
-        </RouterLink>
+        </component>
       </div>
     </div>
 </template>
